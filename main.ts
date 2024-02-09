@@ -16,13 +16,16 @@ sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Enemy, function (sprite, otherSpr
     otherSprite.x += -5
     otherSprite.y += -5
 })
-function start_game () {
-    for (let shark of sharks) {
+function start_game (enemies: Sprite[]) {
+    for (let shark of enemies) {
         shark.follow(nemo, 50)
     }
 }
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, function (sprite, otherSprite) {
     info.changeLifeBy(-1)
+    otherSprite.setFlag(SpriteFlag.Ghost, true)
+    pause(1000)
+    otherSprite.setFlag(SpriteFlag.Ghost, false)
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Life, function (sprite, otherSprite) {
     sprites.destroy(otherSprite)
@@ -52,13 +55,14 @@ function setup_game () {
     powerups[0].setPosition(83, 11)
     powerups[1].setPosition(28, 69)
     powerups[2].setPosition(123, 95)
+    return sharks
 }
 let powerups: Sprite[] = []
-let nemo: Sprite = null
 let sharks: Sprite[] = []
-setup_game()
+let nemo: Sprite = null
+let enemies = setup_game()
 pause(1000)
-start_game()
+start_game(enemies)
 game.onUpdateInterval(1000, function () {
     info.changeScoreBy(1)
 })
